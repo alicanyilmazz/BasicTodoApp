@@ -12,7 +12,9 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     
     @IBOutlet weak var table: UITableView!
     
-    var brands : [String] = ["Apple","Samsung","Xiaomi"]
+    var fileUrl : URL!
+    
+    var brands : [String] = []
     var _counter : Int = 0
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,6 +39,12 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         let editButton = editButtonItem
         editButton.tintColor = UIColor.white
         self.navigationItem.leftBarButtonItems?.append(editButton)
+        
+        
+        let baseUrl = try! FileManager.default.url(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask, appropriateFor: nil, create: false)
+        
+        fileUrl = baseUrl.appendingPathComponent("brands.txt") // FileUrl i alıp Finder aç Command Shift G ile path finder açılacak path i ver txt nin kaydedildiği yeri görürsün
+        
         
         //loadedData
         loadData()
@@ -133,15 +141,36 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         }
     }
     
+    // for saving data to UserDefaults
+    /*
     func saveData()  {
         UserDefaults.standard.setValue(brands , forKey: "brands")
     }
-    
+  
     func loadData()  {
         if let loadedData : [String] = UserDefaults.standard.value(forKey: "brands") as? [String]{
             brands = loadedData
             table.reloadData()
         }
+    }*/
+    
+    // for saving data to txtFile
+    func saveData()  {
+        let _data = NSArray(array: brands)
+        
+        do {
+            try _data.write(to: fileUrl)
+        } catch {
+            print("OPPS! Got an error while writing data to txt file.")
+        }
+    }
+  
+    func loadData()  {
+        if let loadedData : [String] = NSArray(contentsOf: fileUrl) as? [String]{
+            brands = loadedData
+            table.reloadData()
+        }
+        
     }
 }
 
