@@ -15,7 +15,11 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     var fileUrl : URL!
     
     var brands : [String] = []
+    var brandExplanation : [String] = []
     var _counter : Int = 0
+    var selectedRow : Int = -1
+    var brandExp : String = ""
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -29,6 +33,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         //self.title = "super brands"
         //self.navigationController?.navigationBar.prefersLargeTitles = false
         
+        self.navigationItem.largeTitleDisplayMode = .never
         // Add butonunu kod ile de ekledik (soldaki buton)
         let addButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.add, target: self, action: #selector(addButtonClicked))
         addButton.tintColor = UIColor.white
@@ -40,14 +45,35 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         editButton.tintColor = UIColor.white
         self.navigationItem.leftBarButtonItems?.append(editButton)
         
-        
+        // Verileri dosyaya kaydetmek için kullanacagımız yere file olusturmak için kullandıgımız kodlar.
         let baseUrl = try! FileManager.default.url(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask, appropriateFor: nil, create: false)
         
         fileUrl = baseUrl.appendingPathComponent("brands.txt") // FileUrl i alıp Finder aç Command Shift G ile path finder açılacak path i ver txt nin kaydedildiği yeri görürsün
         
+        // Bu kod aracılıgıyla UI dan uğrasmadan UserDefaults ' daki tüm verileri silebiliriz.
+        //UserDefaults.standard.removeObject(forKey: "brands")
         
         //loadedData
         loadData()
+    }
+    
+    // viewDidLoad --> bir kere calısırken , viewWillAppear --> her ekran önümüze geldiğinde çalışır.
+    // yani bizim bu ekranımız her görüntülendiğinde (Bu ekran) çalışacaktır.
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if selectedRow == -1 {
+            return
+        }
+        if brandExp == "" {
+            brandExplanation.remove(at: selectedRow)
+            brands.remove(at: selectedRow)
+        }else if brandExp == brandExplanation[selectedRow]{
+            return
+        }else{
+            brandExplanation[selectedRow] = brandExp
+        }
+        saveData()
+        table.reloadData()
     }
     
     
@@ -98,10 +124,20 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         */
         
         brands.insert(brandName, at: 0)
+        brandExplanation.insert("Not inserted any value", at: 0)
         let indexPath : IndexPath = IndexPath(row: 0, section: 0)
         // Tabloya Ekleme
         table.insertRows(at: [indexPath], with: UITableView.RowAnimation.left)
         saveData()
+        
+        // Bir marka eklediğimizde o markanın seçili olması gerekiyor ki explanation sayfasına gittiğimizde secili hale gelmesi gerekiyor cunku biz selectedRow üzerinden işlem yapacağız
+        // Satırı aşağıda sayfaya gitmeden segue den önce secili hale getirelim.
+        // İlgili indexPath i bulunan şeyi seçili hale getirdik.
+        table.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+        
+        
+        // Ekleme yapıldıktan sonra direkt explanation sayfasına gidilmesini sağlar.
+        performSegue(withIdentifier: "goExplanation", sender: self)
     }
     
     @objc func addButtonClicked(){
@@ -133,28 +169,37 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         table.setEditing(editing, animated: animated)
     }
     
+    // Silme İşlemi
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             brands.remove(at: indexPath.row)
+            brandExplanation.remove(at: indexPath.row)
             table.deleteRows(at: [indexPath], with: UITableView.RowAnimation.left)
             saveData()
         }
     }
     
     // for saving data to UserDefaults
-    /*
     func saveData()  {
         UserDefaults.standard.setValue(brands , forKey: "brands")
+        UserDefaults.standard.setValue(brandExplanation, forKey: "explanations")
     }
   
     func loadData()  {
         if let loadedData : [String] = UserDefaults.standard.value(forKey: "brands") as? [String]{
             brands = loadedData
-            table.reloadData()
         }
-    }*/
+        
+        if let explanation : [String] = UserDefaults.standard.value(forKey: "explanations") as? [String]{
+            brandExplanation = explanation
+        }
+        
+        // tüm tabloyu baştan render eder , yükler.
+        table.reloadData()
+    }
     
     // for saving data to txtFile
+    /*
     func saveData()  {
         let _data = NSArray(array: brands)
         
@@ -171,6 +216,28 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
             table.reloadData()
         }
         
+    }*/
+    
+    
+    
+    // TableView de bir satırı sectiğimizde bunu nasıl ele alabiliriz bunu bu method ile yapacağız. 1. sırada bu calısır
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //print("selected brand : \(brands[indexPath.row])")
+        performSegue(withIdentifier: "goExplanation", sender: self)
+        
+    }
+    
+    // Bir Segue den önce (diğer sayfaya geçişten önce) bir işlem yapmak istiyorsak bunu burada yapıyoruz. 2. sırada bu calısır
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        let explanationView : ExplanationViewController = segue.destination as! ExplanationViewController
+        
+        // tabloda hangi satırın seçili oldugunu buluyoruz.
+        selectedRow = table.indexPathForSelectedRow!.row
+        // Açıklamaları ekliyoruz.
+        explanationView.setExplanation(exp: brandExplanation[selectedRow])
+        explanationView.masterView = self
+       
     }
 }
 
