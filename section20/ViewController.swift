@@ -15,7 +15,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     var fileUrl : URL!
     
     var todos : [String] = []
-    var brandExplanation : [String] = []
+    var todosExplanation : [String] = []
     var _counter : Int = 0
     var selectedRow : Int = -1
     var brandExp : String = ""
@@ -65,12 +65,12 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
             return
         }
         if brandExp == "" {
-            brandExplanation.remove(at: selectedRow)
+            todosExplanation.remove(at: selectedRow)
             todos.remove(at: selectedRow)
-        }else if brandExp == brandExplanation[selectedRow]{
+        }else if brandExp == todosExplanation[selectedRow]{
             return
         }else{
-            brandExplanation[selectedRow] = brandExp
+            todosExplanation[selectedRow] = brandExp
         }
         saveData()
         table.reloadData()
@@ -124,7 +124,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         */
         
         todos.insert(brandName, at: 0)
-        brandExplanation.insert("Not inserted any value", at: 0)
+        todosExplanation.insert("Not inserted any value", at: 0)
         let indexPath : IndexPath = IndexPath(row: 0, section: 0)
         // Tabloya Ekleme
         table.insertRows(at: [indexPath], with: UITableView.RowAnimation.left)
@@ -173,7 +173,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             todos.remove(at: indexPath.row)
-            brandExplanation.remove(at: indexPath.row)
+            todosExplanation.remove(at: indexPath.row)
             table.deleteRows(at: [indexPath], with: UITableView.RowAnimation.left)
             saveData()
         }
@@ -182,7 +182,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     // for saving data to UserDefaults
     func saveData()  {
         UserDefaults.standard.setValue(todos , forKey: "todos")
-        UserDefaults.standard.setValue(brandExplanation, forKey: "explanations")
+        UserDefaults.standard.setValue(todosExplanation, forKey: "explanations")
     }
   
     func loadData()  {
@@ -191,7 +191,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         }
         
         if let explanation : [String] = UserDefaults.standard.value(forKey: "explanations") as? [String]{
-            brandExplanation = explanation
+            todosExplanation = explanation
         }
         
         // tüm tabloyu baştan render eder , yükler.
@@ -235,7 +235,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         // tabloda hangi satırın seçili oldugunu buluyoruz.
         selectedRow = table.indexPathForSelectedRow!.row
         // Açıklamaları ekliyoruz.
-        explanationView.setExplanation(exp: brandExplanation[selectedRow])
+        explanationView.setExplanation(exp: todosExplanation[selectedRow])
         explanationView.masterView = self
        
     }
