@@ -14,7 +14,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     
     var fileUrl : URL!
     
-    var brands : [String] = []
+    var todos : [String] = []
     var brandExplanation : [String] = []
     var _counter : Int = 0
     var selectedRow : Int = -1
@@ -30,7 +30,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         // delegate de ise tableView ile ilgili etkileşimler ile ilgili fonksiyonları barındırıyor.
         table.delegate = self
         
-        //self.title = "super brands"
+        //self.title = "super todos"
         //self.navigationController?.navigationBar.prefersLargeTitles = false
         
         self.navigationItem.largeTitleDisplayMode = .never
@@ -48,10 +48,10 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         // Verileri dosyaya kaydetmek için kullanacagımız yere file olusturmak için kullandıgımız kodlar.
         let baseUrl = try! FileManager.default.url(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask, appropriateFor: nil, create: false)
         
-        fileUrl = baseUrl.appendingPathComponent("brands.txt") // FileUrl i alıp Finder aç Command Shift G ile path finder açılacak path i ver txt nin kaydedildiği yeri görürsün
+        fileUrl = baseUrl.appendingPathComponent("todos.txt") // FileUrl i alıp Finder aç Command Shift G ile path finder açılacak path i ver txt nin kaydedildiği yeri görürsün
         
         // Bu kod aracılıgıyla UI dan uğrasmadan UserDefaults ' daki tüm verileri silebiliriz.
-        //UserDefaults.standard.removeObject(forKey: "brands")
+        //UserDefaults.standard.removeObject(forKey: "todos")
         
         //loadedData
         loadData()
@@ -66,7 +66,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         }
         if brandExp == "" {
             brandExplanation.remove(at: selectedRow)
-            brands.remove(at: selectedRow)
+            todos.remove(at: selectedRow)
         }else if brandExp == brandExplanation[selectedRow]{
             return
         }else{
@@ -102,7 +102,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     
     // verileri görüntülememizi sağlar.
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return brands.count
+        return todos.count
     }
     
     // herbir hücre olusturuldugunda satır olusturuldugunda bu fonksiyon çalıştırılacaktır.
@@ -110,7 +110,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         
         //let cell : UITableViewCell = UITableViewCell()
         let cell : UITableViewCell = table.dequeueReusableCell(withIdentifier: "cell")!
-        cell.textLabel?.text = brands[indexPath.row]
+        cell.textLabel?.text = todos[indexPath.row]
         return cell
     }
     
@@ -119,11 +119,11 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         //_counter = _counter + 1
         
         /*  -- Markaları alta ekler biz aşağıda üste eklesin diye kodda değişiklik yaptık.
-        brands.append(brandName)
-        let indexPath : IndexPath = IndexPath(row: brands.count-1, section: 0)
+        todos.append(brandName)
+        let indexPath : IndexPath = IndexPath(row: todos.count-1, section: 0)
         */
         
-        brands.insert(brandName, at: 0)
+        todos.insert(brandName, at: 0)
         brandExplanation.insert("Not inserted any value", at: 0)
         let indexPath : IndexPath = IndexPath(row: 0, section: 0)
         // Tabloya Ekleme
@@ -172,7 +172,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     // Silme İşlemi
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            brands.remove(at: indexPath.row)
+            todos.remove(at: indexPath.row)
             brandExplanation.remove(at: indexPath.row)
             table.deleteRows(at: [indexPath], with: UITableView.RowAnimation.left)
             saveData()
@@ -181,13 +181,13 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     
     // for saving data to UserDefaults
     func saveData()  {
-        UserDefaults.standard.setValue(brands , forKey: "brands")
+        UserDefaults.standard.setValue(todos , forKey: "todos")
         UserDefaults.standard.setValue(brandExplanation, forKey: "explanations")
     }
   
     func loadData()  {
-        if let loadedData : [String] = UserDefaults.standard.value(forKey: "brands") as? [String]{
-            brands = loadedData
+        if let loadedData : [String] = UserDefaults.standard.value(forKey: "todos") as? [String]{
+            todos = loadedData
         }
         
         if let explanation : [String] = UserDefaults.standard.value(forKey: "explanations") as? [String]{
@@ -201,7 +201,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     // for saving data to txtFile
     /*
     func saveData()  {
-        let _data = NSArray(array: brands)
+        let _data = NSArray(array: todos)
         
         do {
             try _data.write(to: fileUrl)
@@ -212,7 +212,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
   
     func loadData()  {
         if let loadedData : [String] = NSArray(contentsOf: fileUrl) as? [String]{
-            brands = loadedData
+            todos = loadedData
             table.reloadData()
         }
         
@@ -222,7 +222,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     
     // TableView de bir satırı sectiğimizde bunu nasıl ele alabiliriz bunu bu method ile yapacağız. 1. sırada bu calısır
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //print("selected brand : \(brands[indexPath.row])")
+        //print("selected brand : \(todos[indexPath.row])")
         performSegue(withIdentifier: "goExplanation", sender: self)
         
     }
