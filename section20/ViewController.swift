@@ -18,7 +18,7 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     var todosExplanation : [String] = []
     var _counter : Int = 0
     var selectedRow : Int = -1
-    var brandExp : String = ""
+    var todoExp : String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,13 +64,13 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         if selectedRow == -1 {
             return
         }
-        if brandExp == "" {
+        if todoExp == "" {
             todosExplanation.remove(at: selectedRow)
             todos.remove(at: selectedRow)
-        }else if brandExp == todosExplanation[selectedRow]{
+        }else if todoExp == todosExplanation[selectedRow]{
             return
         }else{
-            todosExplanation[selectedRow] = brandExp
+            todosExplanation[selectedRow] = todoExp
         }
         saveData()
         table.reloadData()
