@@ -32,7 +32,7 @@ class ExplanationViewController: UIViewController {
     
     // Bu Ekran gözümüzden kaynoldugunda veya bu ekrandan baska ekrana gecis yaptıgımızda bu fonksiyon calısır.
     override func viewWillDisappear(_ animated: Bool) {
-        masterView?.brandExp = lblBrandExplanation.text
+        masterView?.todoExp = lblBrandExplanation.text
         lblBrandExplanation.resignFirstResponder()
     }
     

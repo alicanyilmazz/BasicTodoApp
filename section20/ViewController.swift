@@ -83,14 +83,14 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
             return
         }
         
-        let alert = UIAlertController(title: "Add Brand", message: "Please enter your brand.", preferredStyle: UIAlertController.Style.alert)
+        let alert = UIAlertController(title: "Add todo", message: "Please enter your todo.", preferredStyle: UIAlertController.Style.alert)
         alert.addTextField(configurationHandler: { txtBrandName in
-            txtBrandName.placeholder = "Brand Name"
+            txtBrandName.placeholder = "Your Todo"
         })
                 
         let actionAdd = UIAlertAction(title: "Add", style: UIAlertAction.Style.default, handler: { action in
             let firstTextField = alert.textFields![0] as UITextField
-            self.addBrand(brandName: firstTextField.text!)
+            self.addTask(taskDefinition: firstTextField.text!)
         })
         
         let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil)
@@ -111,19 +111,21 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
         //let cell : UITableViewCell = UITableViewCell()
         let cell : UITableViewCell = table.dequeueReusableCell(withIdentifier: "cell")!
         cell.textLabel?.text = todos[indexPath.row]
+        cell.textLabel?.textColor = UIColor.white
+        cell.backgroundColor = UIColor.random()
         return cell
     }
     
-    func addBrand(brandName : String) {
-        //let brandName : String = "\(_counter). new brand "
+    func addTask(taskDefinition : String) {
+        //let taskDefinition : String = "\(_counter). new brand "
         //_counter = _counter + 1
         
         /*  -- Markaları alta ekler biz aşağıda üste eklesin diye kodda değişiklik yaptık.
-        todos.append(brandName)
+        todos.append(taskDefinition)
         let indexPath : IndexPath = IndexPath(row: todos.count-1, section: 0)
         */
         
-        todos.insert(brandName, at: 0)
+        todos.insert(taskDefinition, at: 0)
         todosExplanation.insert("Not inserted any value", at: 0)
         let indexPath : IndexPath = IndexPath(row: 0, section: 0)
         // Tabloya Ekleme
@@ -146,14 +148,14 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
             return
         }
         
-        let alert = UIAlertController(title: "Add Brand", message: "Please enter your brand.", preferredStyle: UIAlertController.Style.alert)
+        let alert = UIAlertController(title: "Add Todo", message: "Please enter your todo.", preferredStyle: UIAlertController.Style.alert)
         alert.addTextField(configurationHandler: { txtBrandName in
-            txtBrandName.placeholder = "Brand Name"
+            txtBrandName.placeholder = "Your Todo"
         })
                 
         let actionAdd = UIAlertAction(title: "Add", style: UIAlertAction.Style.default, handler: { action in
             let firstTextField = alert.textFields![0] as UITextField
-            self.addBrand(brandName: firstTextField.text!)
+            self.addTask(taskDefinition: firstTextField.text!)
         })
         
         let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil)
@@ -241,3 +243,19 @@ class ViewController: UIViewController , UITableViewDataSource, UITableViewDeleg
     }
 }
 
+extension CGFloat {
+    static func random() -> CGFloat {
+        return CGFloat(arc4random()) / CGFloat(UInt32.max)
+    }
+}
+
+extension UIColor {
+    static func random() -> UIColor {
+        return UIColor(
+           red:   .random(),
+           green: .random(),
+           blue:  .random(),
+           alpha: 0.9
+        )
+    }
+}
